@@ -5,22 +5,14 @@ themeToggle.addEventListener('click', () => {
     themeToggle.textContent = document.body.classList.contains('light') ? '🌙' : '☀️';
 });
 
-// ========== КУРСОР — ПЛАВНОЕ ПОДСВЕЧИВАНИЕ ==========
+// ========== КУРСОР ==========
 const cursor = document.querySelector('.cursor-glow');
-document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-});
-
-// Эффект нажатия
-document.addEventListener('mousedown', () => {
-    cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
-    cursor.style.background = 'rgba(124, 58, 237, 0.3)';
-});
-document.addEventListener('mouseup', () => {
-    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-    cursor.style.background = 'transparent';
-});
+if (cursor) {
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+}
 
 // ========== ПЛАВНЫЙ СКРОЛЛ ==========
 document.querySelectorAll('nav a').forEach(anchor => {
@@ -50,7 +42,7 @@ function startTimer() {
 }
 startTimer();
 
-// ========== АНИМИРОВАННЫЕ СЧЁТЧИКИ ==========
+// ========== СЧЁТЧИКИ ==========
 const counters = document.querySelectorAll('.counter');
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -61,10 +53,10 @@ const observer = new IntersectionObserver((entries) => {
             const timer = setInterval(() => {
                 if (current >= target) clearInterval(timer);
                 else {
-                    current += Math.ceil(target / 50);
+                    current += Math.ceil(target / 40);
                     el.innerText = current + (el.dataset.suffix || '');
                 }
-            }, 30);
+            }, 25);
             observer.unobserve(el);
         }
     });
@@ -105,27 +97,30 @@ document.querySelector('.modal-close').addEventListener('click', () => modal.sty
 modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
 // ========== ФОРМЫ ==========
-document.getElementById('callbackForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const msg = document.querySelector('.form-message');
-    msg.innerText = '✅ Заявка принята!';
-    setTimeout(() => msg.innerText = '', 2000);
-    e.target.reset();
-});
+const form = document.getElementById('callbackForm');
+if (form) {
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const msg = document.querySelector('.form-message');
+        msg.innerText = '✅ Заявка принята!';
+        setTimeout(() => msg.innerText = '', 2000);
+        form.reset();
+    });
+}
 
-// ========== ОПИСАНИЯ ФИШЕК ==========
+// ========== ФИШКИ ==========
 const descriptions = {
-    "Плавный скролл": "Анимация при клике на меню — страница плавно прокручивается к нужному блоку. Заказчики любят это за «дорогой» вид сайта.",
+    "Плавный скролл": "Анимация при клике на меню — страница плавно прокручивается к нужному блоку.",
     "Таймер акции": "Обратный отсчёт до дедлайна. Конверсия вырастает на 30-40%.",
-    "Адаптив": "Красиво на телефоне, планшете и ноутбуке. База.",
-    "Смена темы": "Тёмная/светлая тема одним кликом — клиенты в восторге.",
-    "Модалка": "Всплывающее окно с формой. Собирает заявки без отвлечения.",
-    "Анимированные счётчики": "Цифры «едут» от 0 до цели при скролле. Отлично для портфолио.",
-    "Аккордеон FAQ": "Вопросы-ответы по клику. Экономит место, выглядит аккуратно.",
-    "Слайдер отзывов": "Листаемые отзывы. Социальное доказательство.",
+    "Адаптив": "Красиво на телефоне, планшете и ноутбуке.",
+    "Смена темы": "Тёмная/светлая тема одним кликом.",
+    "Модалка": "Всплывающее окно с формой.",
+    "Анимированные счётчики": "Цифры «едут» от 0 до цели при скролле.",
+    "Аккордеон FAQ": "Вопросы-ответы по клику.",
+    "Слайдер отзывов": "Листаемые отзывы клиентов.",
     "Карта": "Карта с адресом — доверие к компании.",
-    "Форма с имитацией": "Сбор заявок с валидацией. Легко подключить на почту/ТГ.",
-    "Быстрая загрузка": "Влияет на позиции в Google/Яндекс. Моя гордость."
+    "Форма с имитацией": "Сбор заявок с валидацией.",
+    "Быстрая загрузка": "Влияет на позиции в Google/Яндекс."
 };
 
 document.querySelectorAll('.feature-card').forEach(card => {
@@ -139,7 +134,7 @@ document.querySelectorAll('.feature-card').forEach(card => {
     });
 });
 
-// ========== ФОН КАНВАС (КОСМОС) ==========
+// ========== КАНВАС (СИЛЬНО ОПТИМИЗИРОВАН) ==========
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 let stars = [];
@@ -151,72 +146,45 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-class Star {
-    constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.3;
-        this.alpha = Math.random() * 0.8 + 0.2;
-        this.speed = 0.02 + Math.random() * 0.03;
-    }
-    update() {
-        this.alpha += this.speed;
-        if (this.alpha > 1 || this.alpha < 0.2) this.speed *= -1;
-    }
-    draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 240, 200, ${this.alpha * 0.8})`;
-        ctx.fill();
-    }
-}
-
-function initStars() {
-    stars = [];
-    for (let i = 0; i < 300; i++) stars.push(new Star());
-}
-initStars();
-
-function drawNebula() {
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    if (document.body.classList.contains('light')) {
-        gradient.addColorStop(0, '#e8f0ff');
-        gradient.addColorStop(1, '#d4e2fc');
-    } else {
-        gradient.addColorStop(0, '#05070a');
-        gradient.addColorStop(0.4, '#0a0f1f');
-        gradient.addColorStop(0.7, '#0d1225');
-        gradient.addColorStop(1, '#05070a');
-    }
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-function drawNebulaClouds() {
-    for (let i = 0; i < 5; i++) {
-        const x = (Date.now() * 0.02 + i * 200) % (canvas.width + 400) - 200;
-        const y = canvas.height * 0.5 + Math.sin(Date.now() * 0.001 + i) * 80;
-        const gradient = ctx.createRadialGradient(x, y, 30, x, y, 200);
-        gradient.addColorStop(0, `rgba(124, 58, 237, ${0.08 + Math.sin(Date.now() * 0.001 + i) * 0.03})`);
-        gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-}
-
-function animateBg() {
-    drawNebula();
-    stars.forEach(star => {
-        star.update();
-        star.draw();
+// Всего 100 звезд вместо 300
+for (let i = 0; i < 100; i++) {
+    stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 1.5 + 0.3,
+        alpha: Math.random() * 0.6 + 0.2,
+        speed: 0.01 + Math.random() * 0.02
     });
-    drawNebulaClouds();
-    requestAnimationFrame(animateBg);
 }
-animateBg();
+
+function drawBackground() {
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    if (document.body.classList.contains('light')) {
+        grad.addColorStop(0, '#e8f0ff');
+        grad.addColorStop(1, '#d4e2fc');
+    } else {
+        grad.addColorStop(0, '#05070a');
+        grad.addColorStop(1, '#0a0f1f');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    stars.forEach(s => {
+        s.alpha += s.speed;
+        if (s.alpha > 0.8 || s.alpha < 0.2) s.speed *= -1;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 240, 200, ${s.alpha * 0.7})`;
+        ctx.fill();
+    });
+}
+
+function animate() {
+    drawBackground();
+    requestAnimationFrame(animate);
+}
+animate();
 
 // Перерисовка при смене темы
-const observerTheme = new MutationObserver(() => {
-    animateBg();
-});
-observerTheme.observe(document.body, { attributes: true });
+const themeObserver = new MutationObserver(() => drawBackground());
+themeObserver.observe(document.body, { attributes: true });
