@@ -7,7 +7,7 @@ themeToggle.addEventListener('click', () => {
 
 // ========== КУРСОР ==========
 const cursor = document.querySelector('.cursor-glow');
-if (cursor) {
+if (cursor && window.matchMedia('(pointer: fine)').matches) {
     document.addEventListener('mousemove', (e) => {
         cursor.style.left = e.clientX + 'px';
         cursor.style.top = e.clientY + 'px';
@@ -110,7 +110,7 @@ if (form) {
 
 // ========== ФИШКИ ==========
 const descriptions = {
-    "Плавный скролл": "Анимация при клике на меню — страница плавно прокручивается к нужному блоку.",
+    "Плавный скролл": "Анимация при клике на меню — страница плавно прокручивается.",
     "Таймер акции": "Обратный отсчёт до дедлайна. Конверсия вырастает на 30-40%.",
     "Адаптив": "Красиво на телефоне, планшете и ноутбуке.",
     "Смена темы": "Тёмная/светлая тема одним кликом.",
@@ -134,7 +134,7 @@ document.querySelectorAll('.feature-card').forEach(card => {
     });
 });
 
-// ========== КАНВАС (СИЛЬНО ОПТИМИЗИРОВАН) ==========
+// ========== КАНВАС (ОПТИМИЗИРОВАН) ==========
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 let stars = [];
@@ -143,17 +143,17 @@ function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
+
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// Всего 100 звезд вместо 300
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 120; i++) {
     stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 1.5 + 0.3,
+        size: Math.random() * 1.8 + 0.3,
         alpha: Math.random() * 0.6 + 0.2,
-        speed: 0.01 + Math.random() * 0.02
+        speed: 0.008 + Math.random() * 0.015
     });
 }
 
@@ -185,6 +185,5 @@ function animate() {
 }
 animate();
 
-// Перерисовка при смене темы
 const themeObserver = new MutationObserver(() => drawBackground());
 themeObserver.observe(document.body, { attributes: true });
